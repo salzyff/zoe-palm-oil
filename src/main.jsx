@@ -1,150 +1,60 @@
-import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import {
-  ArrowDownRight,
-  ArrowRight,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  CircleUserRound,
-  Clock3,
-  Menu,
-  Minus,
-  Plus,
-  ShoppingBag,
-  Sparkles,
-  Star,
-  X,
-} from 'lucide-react';
-import './styles.css';
+import { useState } from 'react'
+import { createRoot } from 'react-dom/client'
+import { ArrowRight, ArrowUpRight, BookOpen, Check, CircleCheck, Compass, GraduationCap, HeartHandshake, Menu, Sparkles, Users, X } from 'lucide-react'
+import './styles.css'
 
-const oilImage = 'https://afrolems.files.wordpress.com/2013/06/palm-oil-for-cooking-nigerian-food.jpg';
-const bottleImage = 'https://www.truepalmoil.com/cdn/shop/files/TruePalmOil014.jpg?v=1699953711&width=1445';
+const programmes = [
+  { id: 'early', label: 'Early Years', title: 'A confident beginning', text: 'A warm, purposeful foundation where curiosity, play, language, and independence grow together.', icon: Sparkles, color: 'mint' },
+  { id: 'primary', label: 'Primary', title: 'Discover. Question. Create.', text: 'Children build strong academic foundations while developing character, confidence, and a love of learning.', icon: BookOpen, color: 'gold' },
+  { id: 'secondary', label: 'Secondary', title: 'Ready for what comes next', text: 'A focused environment for middle and teenage years, with the guidance to think deeply and act responsibly.', icon: GraduationCap, color: 'blue' },
+]
+const gallery = [
+  { src: 'https://www.quantumleapschools.org/Image/74932520230825.jpg', label: 'Focused learning', className: 'gallery-wide' },
+  { src: 'https://www.quantumleapschools.org/Image/6794720240907.jpg', label: 'School community', className: '' },
+  { src: 'https://quantumleapschools.org/Image/10172920230829.jpg', label: 'Celebrating achievement', className: '' },
+  { src: 'https://quantumleapschools.org/Image/13022520230825.jpg', label: 'Sport and movement', className: '' },
+]
+const curriculum = [
+  ['01', 'Strong foundations', 'A balanced programme for early years, primary, and secondary learners.'],
+  ['02', 'Nigerian curriculum', 'Learning grounded in the requirements and realities of Nigerian education.'],
+  ['03', 'British curriculum pathway', 'An international perspective for families seeking broader academic preparation.'],
+  ['04', 'Character and skills', 'Technology, creativity, leadership, and moral integrity alongside academics.'],
+]
 
-const products = [
-  { id: '75cl', name: 'Zoe Palm Oil', size: '75 cl bottle', detail: 'GTIN 6156000479101', tag: 'Everyday bottle', tone: 'orange' },
-  { id: '1l', name: 'Zoe Palm Oil', size: '1 litre bottle', detail: 'GTIN 6156000479118', tag: 'Family bottle', tone: 'green' },
-  { id: 'wholesale', name: 'Zoe for your shop', size: 'Wholesale supply', detail: 'For resellers & distributors', tag: 'Stock Zoe', tone: 'cream' },
-];
+function Logo() { return <div className="brand"><span className="logo-orbit"><i /><i /><i /></span><span>Quantum <b>Leap</b><small> SCHOOLS</small></span></div> }
 
-const recipes = [
-  { title: 'Sunday Ofada', time: '45 min', image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=85', note: 'Smoky pepper sauce, the way weekends should taste.' },
-  { title: 'Palm-oil stew', time: '35 min', image: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=85', note: 'A rich, glossy base for rice, yam and plantain.' },
-  { title: 'Pepper soup night', time: '30 min', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=900&q=85', note: 'Deep flavour and plenty of warmth in one pot.' },
-];
+export default function App() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [active, setActive] = useState('early')
+  const [modal, setModal] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const programme = programmes.find(item => item.id === active)
+  const openAdmissions = () => { setSubmitted(false); setModal(true) }
+  const submitEnquiry = (event) => {
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    const message = `Hello Quantum Leap Schools. I would like to make an admissions enquiry.%0A%0AParent/guardian: ${data.get('name')}%0AEmail or phone: ${data.get('contact')}%0AEnquiry: ${data.get('enquiry')}`
+    window.open(`https://wa.me/2348023153950?text=${message}`, '_blank', 'noopener,noreferrer')
+    setSubmitted(true)
+  }
 
-function App() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [cart, setCart] = useState({ family: 1 });
-  const [selectedRecipe, setSelectedRecipe] = useState(0);
-  const [notice, setNotice] = useState('');
-
-  const cartItems = products.filter((product) => cart[product.id]);
-  const cartCount = Object.values(cart).reduce((sum, amount) => sum + amount, 0);
-
-  const updateCart = (productId, change) => {
-    setCart((current) => {
-      const next = Math.max(0, (current[productId] || 0) + change);
-      const updated = { ...current };
-      if (next === 0) delete updated[productId];
-      else updated[productId] = next;
-      return updated;
-    });
-  };
-
-  const addToCart = (product) => {
-    updateCart(product.id, 1);
-    setNotice(`${product.name} added to your basket.`);
-    setTimeout(() => setNotice(''), 2600);
-  };
-
-  const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setMenuOpen(false);
-  };
-
-  return (
-    <div className="app-shell">
-      <div className="announcement"><Sparkles size={14} /> Quality. Fresh. Clean. Natural. Native. <span>Call / WhatsApp 09036417185</span></div>
-
-      <header className="site-header">
-        <button className="mobile-menu" aria-label="Open menu" onClick={() => setMenuOpen(true)}><Menu size={22} /></button>
-        <button className="brand-mark" onClick={() => scrollTo('top')} aria-label="Zoe home">
-          <span className="brand-sun">Z</span><span>ZOE</span>
-        </button>
-        <nav className={menuOpen ? 'main-nav nav-open' : 'main-nav'}>
-          <button className="close-menu" onClick={() => setMenuOpen(false)}><X size={20} /></button>
-          <button onClick={() => scrollTo('shop')}>Shop oil</button>
-          <button onClick={() => scrollTo('story')}>Our story</button>
-          <button onClick={() => scrollTo('recipes')}>Cook with Zoe</button>
-          <button onClick={() => scrollTo('contact')}>Contact</button>
-        </nav>
-        <div className="header-actions">
-          <button className="icon-button hide-mobile" aria-label="Account"><CircleUserRound size={21} /></button>
-          <button className="cart-button" onClick={() => setCartOpen(true)}><ShoppingBag size={18} /><span>Basket</span><b>{cartCount}</b></button>
-        </div>
-      </header>
-
-      <main id="top">
-        <section className="hero-section">
-          <div className="hero-copy">
-            <p className="eyebrow">ZOE PALM OIL · NAFDAC A8-109270L</p>
-            <h1>Natural palm oil for <em>proper food.</em></h1>
-            <p className="hero-lede">Fresh, clean native palm oil with the rich colour, aroma and taste Nigerian kitchens know and love.</p>
-            <div className="hero-buttons">
-              <button className="button button-dark" onClick={() => scrollTo('shop')}>Shop the pantry <ArrowRight size={17} /></button>
-              <button className="text-button" onClick={() => scrollTo('story')}>Why Zoe <ArrowDownRight size={17} /></button>
-            </div>
-            <div className="hero-proof"><div className="avatars"><span>75</span><span>1L</span><span>NG</span></div><p><strong>75cl + 1 litre</strong><br />available for your kitchen</p></div>
-          </div>
-          <div className="hero-visual">
-            <div className="hero-orbit orbit-one" /><div className="hero-orbit orbit-two" />
-            <div className="floating-note"><span className="note-dot" /> Gently shake before use</div>
-            <div className="hero-bottle" aria-label="Zoe Palm Oil bottle illustration">
-              <div className="bottle-cap" /><div className="bottle-neck" /><div className="bottle-body"><div className="bottle-label"><span>NATURAL</span><strong>ZOE</strong><small>PALM OIL</small><i>Fresh · Clean · Native</i></div></div>
-            </div>
-            <div className="hero-image-card"><img src={oilImage} alt="Palm oil being poured into a bowl" /><span>Made for<br /><strong>proper food.</strong></span></div>
-            <div className="sun-stamp"><Star size={13} fill="currentColor" /><span>PURE<br />PALM<br />GOODNESS</span></div>
-          </div>
-        </section>
-
-        <section className="ticker" aria-label="Zoe values">
-          <div>QUALITY</div><span>✦</span><div>FRESH</div><span>✦</span><div>CLEAN</div><span>✦</span><div>NATURAL NATIVE PALM OIL</div><span>✦</span><div>QUALITY</div>
-        </section>
-
-        <section className="intro-section content-width" id="story">
-          <div className="section-kicker"><span>01</span><span>Why Zoe</span></div>
-          <div className="intro-grid"><h2>Rich colour. <em>Native taste.</em></h2><div><p className="large-copy">Zoe Palm Oil is made for soups, stews, frying and the everyday Nigerian kitchen—with the unmistakable taste and aroma of natural native palm oil.</p><button className="text-button" onClick={() => scrollTo('process')}>See the Zoe standard <ArrowRight size={17} /></button></div></div>
-        </section>
-
-        <section className="feature-band" id="process">
-          <div className="feature-photo"><img src={bottleImage} alt="Palm oil bottle and fresh kitchen ingredients" /><div className="photo-caption">From palm fruit<br />to your kitchen.</div></div>
-          <div className="feature-copy"><p className="eyebrow light">THE ZOE STANDARD</p><h2>Pure palm fruit.<br /><em>Honest flavour.</em></h2><p>Every bottle starts with palm fruit and is made to keep the natural colour, aroma and taste people look for in native palm oil.</p><div className="standard-list"><div><span>01</span><strong>Palm fruit</strong><small>The only listed ingredient</small></div><div><span>02</span><strong>Shake before use</strong><small>Gently shake the bottle first</small></div><div><span>03</span><strong>Store with care</strong><small>Keep in a cool, dry place</small></div></div></div>
-        </section>
-
-        <section className="shop-section content-width" id="shop">
-          <div className="section-heading"><div><div className="section-kicker"><span>02</span><span>Find your bottle</span></div><h2>Choose your <em>size.</em></h2></div><p>75cl for everyday cooking.<br />1 litre for bigger pots.</p></div>
-          <div className="product-grid">{products.map((product) => <article className={`product-card ${product.tone}`} key={product.id}><div className="product-card-top"><span className="product-tag">{product.tag}</span><button className="round-arrow" onClick={() => addToCart(product)} aria-label={`Add ${product.name} to enquiry`}><Plus size={18} /></button></div><div className="product-pack"><div className="mini-cap" /><div className="mini-bottle"><div className="mini-label"><strong>ZOE</strong><span>PALM OIL</span></div></div></div><div className="product-meta"><div><h3>{product.name}</h3><p>{product.size}</p></div><strong>Enquire</strong></div><button className="product-add" onClick={() => addToCart(product)}>Add to enquiry <ArrowRight size={15} /></button></article>)}</div>
-        </section>
-
-        <section className="recipe-section" id="recipes">
-          <div className="content-width recipe-layout"><div className="recipe-copy"><div className="section-kicker light-kicker"><span>03</span><span>From our kitchen</span></div><h2>What are you<br /><em>cooking?</em></h2><p>Good oil is only the beginning. Find a few Zoe-worthy ways to make your next meal memorable.</p><div className="recipe-controls"><button onClick={() => setSelectedRecipe((selectedRecipe + recipes.length - 1) % recipes.length)} aria-label="Previous recipe"><ChevronLeft size={18} /></button><span>0{selectedRecipe + 1} <i>/ 0{recipes.length}</i></span><button onClick={() => setSelectedRecipe((selectedRecipe + 1) % recipes.length)} aria-label="Next recipe"><ChevronRight size={18} /></button></div></div><div className="recipe-card"><img src={recipes[selectedRecipe].image} alt={recipes[selectedRecipe].title} /><div className="recipe-overlay"><div><span><Clock3 size={14} /> {recipes[selectedRecipe].time}</span><h3>{recipes[selectedRecipe].title}</h3><p>{recipes[selectedRecipe].note}</p></div><button className="round-arrow light-arrow" aria-label="View recipe"><ArrowUpRightIcon /></button></div></div></div>
-        </section>
-
-        <section className="social-section content-width"><div className="social-heading"><div><div className="section-kicker"><span>04</span><span>From Instagram</span></div><h2>Follow <em>@zoepalmoil</em></h2></div><a className="text-button" href="https://www.instagram.com/zoepalmoil/" target="_blank" rel="noreferrer">View the profile <span className="social-mark">◎</span></a></div><div className="social-grid"><div className="social-tile tile-green"><span>Quality.<br />Fresh.<br />Clean.</span><strong>@zoepalmoil</strong></div><div className="social-tile tile-image"><img src={oilImage} alt="Palm oil cooking inspiration" /><span>Natural native palm oil</span></div><div className="social-tile tile-orange"><span>For soups,<br />stews &amp; more.</span><strong>Call / WhatsApp ↗</strong></div><div className="social-tile tile-dark"><span>ZOE</span><small>PALM OIL · LAGOS</small></div></div></section>
-
-        <section className="contact-section" id="contact"><div className="content-width contact-inner"><div><p className="eyebrow light">CALL OR WHATSAPP</p><h2>Go and buy<br /><em>Zoe Palm Oil.</em></h2></div><div><p>For stockists, resellers and home orders, reach the Zoe team directly.</p><a className="button button-light" href="https://wa.me/23481097149157?text=Hello%20Zoe%20Palm%20Oil%2C%20I%27d%20like%20to%20order." target="_blank" rel="noreferrer">WhatsApp 08109749157 <ArrowUpRightIcon /></a><p className="contact-phones">Also: 09036417185</p></div></div></section>
-      </main>
-
-      <footer className="site-footer"><div className="brand-mark footer-brand"><span className="brand-sun">Z</span><span>ZOE</span></div><p>Quality. Fresh. Clean. Natural. Native.</p><div className="footer-links"><button onClick={() => scrollTo('shop')}>Products</button><button onClick={() => scrollTo('story')}>About Zoe</button><a href="https://www.instagram.com/zoepalmoil/" target="_blank" rel="noreferrer">Instagram</a></div><small>© Zoe Palm Oil. Made in Nigeria.</small></footer>
-
-      {notice && <div className="toast"><Check size={18} /> {notice}</div>}
-      {cartOpen && <div className="drawer-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(event) => event.stopPropagation()}><div className="drawer-header"><div><p className="eyebrow">YOUR ENQUIRY</p><h2>Ready to <em>order.</em></h2></div><button className="icon-button" onClick={() => setCartOpen(false)} aria-label="Close enquiry"><X size={21} /></button></div>{cartItems.length === 0 ? <div className="empty-cart"><ShoppingBag size={36} /><p>Your enquiry list is waiting for its first Zoe bottle.</p><button className="button button-dark" onClick={() => { setCartOpen(false); scrollTo('shop'); }}>View products</button></div> : <><div className="cart-items">{cartItems.map((product) => <div className="cart-item" key={product.id}><div className={`cart-thumb ${product.tone}`}><div className="mini-bottle"><div className="mini-label"><strong>ZOE</strong><span>PALM OIL</span></div></div></div><div className="cart-item-info"><h3>{product.name}</h3><p>{product.size} · {product.detail}</p><div className="quantity"><button onClick={() => updateCart(product.id, -1)}><Minus size={14} /></button><span>{cart[product.id]}</span><button onClick={() => updateCart(product.id, 1)}><Plus size={14} /></button></div></div></div>)}</div><div className="cart-total"><span>Order list</span><strong>{cartCount} item{cartCount === 1 ? '' : 's'}</strong></div><a className="button button-dark checkout-button" href="https://wa.me/23481097149157?text=Hello%20Zoe%20Palm%20Oil%2C%20I%27d%20like%20to%20order." target="_blank" rel="noreferrer">Send on WhatsApp <ArrowRight size={17} /></a><p className="delivery-note">Call 09036417185 or 08109749157 to order.</p></>}</aside></div>}
-    </div>
-  );
+  return <div className="site">
+    <div className="notice"><span><span className="notice-dot" /> Admissions enquiries are now open</span><a href="#admissions">Explore admissions <ArrowUpRight size={13} /></a></div>
+    <header className="header"><nav className="nav container"><a href="#home"><Logo /></a><div className={`links ${menuOpen ? 'open' : ''}`}><a href="#about" onClick={() => setMenuOpen(false)}>Our school</a><a href="#learning" onClick={() => setMenuOpen(false)}>Learning</a><a href="#life" onClick={() => setMenuOpen(false)}>School life</a><a href="#admissions" onClick={() => setMenuOpen(false)}>Admissions</a></div><div className="nav-actions"><a className="phone" href="tel:+2348023153950">+234 802 315 3950</a><button className="button button-dark" onClick={openAdmissions}>Enquire now <ArrowRight size={15} /></button><button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button></div></nav></header>
+    <main id="home">
+      <section className="hero container"><div className="hero-content"><div className="kicker"><span /> Quantum Leap Schools · Ikorodu, Lagos</div><h1>A place where<br /><em>potential</em> takes flight.</h1><p>We nurture curious minds, grounded character, and the confidence to step into the world ready to make a difference.</p><div className="hero-buttons"><button className="button button-primary" onClick={openAdmissions}>Begin your journey <ArrowUpRight size={17} /></button><a className="learn-link" href="#about">Discover our story <ArrowRight size={15} /></a></div><div className="hero-note"><span className="note-icon"><HeartHandshake size={16} /></span><span>Growing learners from early childhood through the teenage years.</span></div></div><div className="hero-art"><div className="sun" /><div className="hill hill-one" /><div className="hill hill-two" /><div className="tree tree-one"><i /><i /><i /></div><div className="tree tree-two"><i /><i /><i /></div><div className="paper-plane"><ArrowUpRight /></div><div className="art-card"><span>Today’s question</span><strong>What could<br />you discover?</strong><div><span className="line" /><span className="line short" /></div></div><div className="art-label">Learning is a leap<br />worth taking.</div></div></section>
+      <section className="stat-bar"><div className="container stats"><div><strong>01</strong><span>Curious minds</span></div><div><strong>02</strong><span>Strong foundations</span></div><div><strong>03</strong><span>Confident futures</span></div><div className="stat-end"><span>Ikorodu · Lagos</span><Compass size={18} /></div></div></section>
+      <section className="section container about" id="about"><div className="section-intro"><div><div className="kicker"><span /> The Quantum Leap way</div><h2>Education that grows<br />with <em>the child.</em></h2></div><p>At Quantum Leap Schools, learning goes beyond textbooks. We create an environment where children are encouraged to ask questions, love learning, build integrity, and discover their own potential.</p></div><div className="values"><article><span className="value-icon mint"><HeartHandshake size={20} /></span><h3>Character first</h3><p>Kindness, honesty, responsibility, and respect are part of everyday learning.</p><a href="#learning">Our values <ArrowUpRight size={14} /></a></article><article><span className="value-icon gold"><BookOpen size={20} /></span><h3>Learning with purpose</h3><p>Solid academic foundations meet curiosity, creativity, and real-world thinking.</p><a href="#learning">Our approach <ArrowUpRight size={14} /></a></article><article><span className="value-icon blue"><Users size={20} /></span><h3>Every child seen</h3><p>Children are supported as individuals, with the guidance to grow at their own pace.</p><a href="#admissions">Meet the team <ArrowUpRight size={14} /></a></article></div></section>
+      <section className="learning-section" id="learning"><div className="container learning-grid"><div className="learning-copy"><div className="kicker"><span /> Learning pathways</div><h2>Every leap begins<br />with a <em>first step.</em></h2><p>From the first questions of early childhood to the bigger decisions of adolescence, our programmes are designed to help learners move forward with confidence.</p><div className="programme-tabs">{programmes.map((item, index) => <button key={item.id} className={active === item.id ? 'active' : ''} onClick={() => setActive(item.id)}><span>0{index + 1}</span>{item.label}<ArrowRight size={14} /></button>)}</div></div><div className={`programme-card ${programme.color}`}><span className="programme-icon">{(() => { const Icon = programme.icon; return <Icon size={24} /> })()}</span><span className="programme-label">{programme.label}</span><h3>{programme.title}</h3><p>{programme.text}</p><div className="programme-checks"><span><Check size={13} /> Purposeful learning</span><span><Check size={13} /> Caring guidance</span><span><Check size={13} /> Confident growth</span></div><button className="circle-button" onClick={openAdmissions}><ArrowUpRight size={20} /></button></div></div></section>
+      <section className="curriculum-section"><div className="container"><div className="section-intro compact"><div><div className="kicker"><span /> What families can expect</div><h2>A pathway built<br />around <em>possibility.</em></h2></div><p>We’ve kept the information clear for prospective families. The school can replace these overview points with the exact current subject lists, fees, and year-group requirements.</p></div><div className="curriculum-grid">{curriculum.map(([number, title, text]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>)}</div><div className="admission-steps"><div><span>01</span><strong>Make an enquiry</strong><p>Tell the school your child’s year group and ask about availability.</p></div><div><span>02</span><strong>Visit and meet</strong><p>Arrange a campus conversation with the admissions team.</p></div><div><span>03</span><strong>Request current fees</strong><p>Get the latest fee schedule and requirements directly from the school.</p></div><button className="button button-dark" onClick={openAdmissions}>Request fees on WhatsApp <ArrowRight size={15} /></button></div><div className="curriculum-actions"><a className="outline-link" href="https://sms.quantumleapschools.org/" target="_blank" rel="noreferrer">Student / staff portal <ArrowUpRight size={15} /></a><a className="outline-link" href="https://www.google.com/maps/search/?api=1&query=6-8+Salami+Solebo+Street+Igbo+Olowo+Ikorodu+Lagos" target="_blank" rel="noreferrer">View campus on Maps <ArrowUpRight size={15} /></a></div></div></section>
+      <section className="section container life" id="life"><div className="life-heading"><div><div className="kicker"><span /> More than a classroom</div><h2>A school life full<br />of <em>possibility.</em></h2></div><p>Learning happens in the classroom, on the field, in conversation, and in every new challenge a child is brave enough to try.</p></div><div className="life-grid"><div className="life-feature"><div className="feature-content"><span className="feature-number">01</span><h3>Find your spark.</h3><p>Space for learners to explore technology, creativity, leadership, sport, and the ideas that excite them.</p><a href="#admissions">See school life <ArrowUpRight size={15} /></a></div><div className="feature-orbit"><Sparkles /></div></div><div className="life-list"><div><span>02</span><div><strong>A community that cares</strong><p>Families, teachers, and learners moving forward together.</p></div><ArrowUpRight size={16} /></div><div><span>03</span><div><strong>Ready for the wider world</strong><p>Confidence, curiosity, and character for every next step.</p></div><ArrowUpRight size={16} /></div><div><span>04</span><div><strong>Day and boarding pathways</strong><p>A focused school experience built around each learner.</p></div><ArrowUpRight size={16} /></div></div></div></section>
+      <section className="gallery-section"><div className="container"><div className="gallery-heading"><div><div className="kicker"><span /> Around Quantum Leap</div><h2>See the school<br /><em>in motion.</em></h2></div><a className="learn-link" href="https://www.quantumleapschools.org/gallery.aspx" target="_blank" rel="noreferrer">View the original gallery <ArrowUpRight size={15} /></a></div><div className="gallery-grid">{gallery.map(image => <a className={`gallery-image ${image.className}`} href={image.src} target="_blank" rel="noreferrer" key={image.src}><img src={image.src} alt={image.label} loading="lazy" /><span>{image.label} <ArrowUpRight size={14} /></span></a>)}</div></div></section>
+      <section className="news-section"><div className="container"><div className="section-intro compact"><div><div className="kicker"><span /> From the school</div><h2>Moments worth<br /><em>sharing.</em></h2></div><a className="learn-link" href="https://www.quantumleapschools.org/news.aspx" target="_blank" rel="noreferrer">Read school news <ArrowUpRight size={15} /></a></div><div className="news-grid"><article><span>School life</span><h3>Learning beyond the classroom</h3><p>Explore the school’s public updates, activities, and community moments.</p><a href="https://www.quantumleapschools.org/news.aspx" target="_blank" rel="noreferrer">Read more <ArrowRight size={14} /></a></article><article><span>Admissions</span><h3>Plan your visit to Ikorodu</h3><p>Speak directly with the school team about year groups, pathways, and next steps.</p><a href="#admissions">Make an enquiry <ArrowRight size={14} /></a></article><article><span>Resources</span><h3>Keep families connected</h3><p>Quick access to the school portal, contact channels, and campus location.</p><a href="https://sms.quantumleapschools.org/" target="_blank" rel="noreferrer">Open portal <ArrowRight size={14} /></a></article></div></div></section>
+      <section className="admissions container" id="admissions"><div className="admission-card"><div><div className="kicker light"><span /> Admissions</div><h2>Ready to take<br /><em>the next leap?</em></h2></div><div><p>Come and discover a school where your child can learn, grow, and become more of who they are meant to be.</p><button className="button button-white" onClick={openAdmissions}>Make an enquiry <ArrowRight size={16} /></button></div></div></section>
+    </main>
+    <footer className="footer"><div className="container footer-top"><Logo /><div className="footer-contact"><a href="mailto:quantumleap@yahoo.com">quantumleap@yahoo.com</a><a href="tel:+2348023153950">+234 802 315 3950</a><a href="https://wa.me/2348023153950" target="_blank" rel="noreferrer">WhatsApp admissions</a><a href="https://www.google.com/maps/search/?api=1&query=6-8+Salami+Solebo+Street+Igbo+Olowo+Ikorodu+Lagos" target="_blank" rel="noreferrer">Get directions</a><span>6–8 Salami Solebo Street, Igbo Olowo,<br />Oke-Oriya, Ikorodu, Lagos</span></div><div className="footer-links"><a href="#about">Our school</a><a href="#learning">Learning</a><a href="#admissions">Admissions</a><a href="https://sms.quantumleapschools.org/" target="_blank" rel="noreferrer">Portal</a></div></div><div className="container footer-bottom"><span>© 2026 Quantum Leap Schools</span><span>Learning with purpose · Growing with confidence</span></div></footer>
+    {modal && <div className="modal-backdrop" onClick={() => setModal(false)}><div className="modal" onClick={e => e.stopPropagation()}><button className="modal-close" onClick={() => setModal(false)}><X size={18} /></button>{submitted ? <div className="success"><span><CircleCheck /></span><h2>Thank you.</h2><p>Your enquiry has been prepared for WhatsApp. The school team can continue the conversation there.</p><button className="button button-primary" onClick={() => setModal(false)}>Close</button></div> : <><div className="kicker"><span /> Admissions enquiry</div><h2>Let’s begin<br /><em>the conversation.</em></h2><form onSubmit={submitEnquiry}><label>Parent/guardian name<input name="name" required placeholder="Your name" /></label><label>Email or phone<input name="contact" required placeholder="How should we reach you?" /></label><label>Tell us about your enquiry<textarea name="enquiry" rows="4" required placeholder="Which year group are you enquiring about?" /></label><button className="button button-primary" type="submit">Continue to WhatsApp <ArrowRight size={16} /></button></form></>}</div></div>}
+  </div>
 }
 
-function ArrowUpRightIcon() { return <ArrowRight size={17} style={{ transform: 'rotate(-45deg)' }} />; }
-
-createRoot(document.getElementById('root')).render(<App />);
+createRoot(document.getElementById('root')).render(<App />)
