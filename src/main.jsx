@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createRoot } from 'react-dom/client'
 import { ArrowRight, ArrowUpRight, BookOpen, Check, CircleCheck, Compass, GraduationCap, HeartHandshake, Menu, Sparkles, Users, X } from 'lucide-react'
 import './styles.css'
 
@@ -55,3 +56,5 @@ export default function App() {
     {modal && <div className="modal-backdrop" onClick={() => setModal(false)}><div className="modal" onClick={e => e.stopPropagation()}><button className="modal-close" onClick={() => setModal(false)}><X size={18} /></button>{submitted ? <div className="success"><span><CircleCheck /></span><h2>Thank you.</h2><p>Your enquiry has been prepared for WhatsApp. The school team can continue the conversation there.</p><button className="button button-primary" onClick={() => setModal(false)}>Close</button></div> : <><div className="kicker"><span /> Admissions enquiry</div><h2>Let’s begin<br /><em>the conversation.</em></h2><form onSubmit={submitEnquiry}><label>Parent/guardian name<input name="name" required placeholder="Your name" /></label><label>Email or phone<input name="contact" required placeholder="How should we reach you?" /></label><label>Tell us about your enquiry<textarea name="enquiry" rows="4" required placeholder="Which year group are you enquiring about?" /></label><button className="button button-primary" type="submit">Continue to WhatsApp <ArrowRight size={16} /></button></form></>}</div></div>}
   </div>
 }
+
+createRoot(document.getElementById('root')).render(<App />)
